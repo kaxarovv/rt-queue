@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: rtq_postgres
+    environment:
+      POSTGRES_USER: rtq
+      POSTGRES_PASSWORD: rtq_dev_password
+      POSTGRES_DB: rtq_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rtq -d rtq_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: rtq_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: rtq_minio
+      MINIO_ROOT_PASSWORD: rtq_minio_password
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    volumes:
+      - miniodata:/data
+
+volumes:
+  pgdata:
+  miniodata:

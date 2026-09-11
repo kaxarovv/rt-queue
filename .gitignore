@@ -1,0 +1,22 @@
+# --- Секреты ---
+.env
+!.env.example
+
+# --- Python (backend) ---
+backend/venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+
+# --- Node (frontend) ---
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+
+# --- IDE / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
