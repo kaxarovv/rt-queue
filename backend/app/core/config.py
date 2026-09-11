@@ -1,3 +1,4 @@
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,6 +14,25 @@ class Settings(BaseSettings):
 
     # Database
     database_url: str = "postgresql+psycopg://rtq:rtq_dev_password@localhost:5432/rtq_db"
+
+    @field_validator("database_url")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """
+        Хостинги БД (Railway, Render, Heroku и т.п.) обычно выдают DATABASE_URL
+        в виде "postgresql://..." или "postgres://..." -- без явного драйвера.
+        SQLAlchemy в этом случае попытается взять psycopg2 (не установлен,
+        в requirements.txt только psycopg3), и упадёт. Нормализуем схему сюда,
+        а не заставляем каждый раз руками править значение при вставке в
+        переменные окружения хостинга.
+        """
+        if value.startswith("postgresql+psycopg://"):
+            return value
+        if value.startswith("postgres://"):
+            return "postgresql+psycopg://" + value[len("postgres://") :]
+        if value.startswith("postgresql://"):
+            return "postgresql+psycopg://" + value[len("postgresql://") :]
+        return value
 
     # Object storage (MinIO / S3-совместимое)
     s3_endpoint_url: str = "http://localhost:9000"
