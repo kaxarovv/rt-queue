@@ -34,11 +34,14 @@ class Settings(BaseSettings):
             return "postgresql+psycopg://" + value[len("postgresql://") :]
         return value
 
-    # Object storage (MinIO / S3-совместимое)
+    # Object storage: любое S3-совместимое хранилище (MinIO локально, Cloudflare
+    # R2 в облаке) -- код не меняется, только эти значения. R2 требует region_name
+    # "auto"; MinIO region игнорирует, так что дефолт безопасен для обоих.
     s3_endpoint_url: str = "http://localhost:9000"
     s3_access_key: str = "rtq_minio"
     s3_secret_key: str = "rtq_minio_password"
     s3_bucket_name: str = "source-documents"
+    s3_region: str = "auto"
 
     # LLM -- любой OpenAI-совместимый эндпоинт (/v1/chat/completions +
     # response_format с json_schema): по умолчанию локальный LM Studio,
